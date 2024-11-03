@@ -6,10 +6,10 @@
     class="container mb-5" 
 >
     <div class="card mt-5">
-        <div class="card-header">Liste des Clients</div>
+        <div class="card-header">Liste des Dettes</div>
         <div class="card-body p-3">
         <div class="row my-2 d-flex justify-content-end">
-        <a href="{{path("client.create")}}"
+        <a href="#"
                                 type="button"
                                 class="btn btn-outline-dark col-1"
                             >
@@ -17,16 +17,7 @@
                             </a>
 
                         
-        </div>
-        <div class="mb-5 col-8" >
-        {{form_start(searchClientform,{'attr':{'class':'d-flex justify-content-around'} })}}    
-              {{form_row(searchClientform.telephone)}}      
-               {{form_row(searchClientform.surname,{'attr':{'class':'mr-2'}})}} 
-                {{form_row(searchClientform.statut)}}       
-          {{form_end(searchClientform)}}
-        
-        </div>
-        
+        </div> 
             <div
                 class="table-responsive"
             >
@@ -35,33 +26,30 @@
                 >
                     <thead>
                         <tr>
-                            <th scope="col">Nom et Prenom</th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Client</th>
                             <th scope="col">Telephone</th>
-                            <th scope="col">Surname</th>
-                            <th scope="col">Adresse</th>
-                            <th scope="col">Actions</th>
+                            <th scope="col">Montant</th>
+                            <th scope="col">MontantVerse</th>
+                            <th scope="col">Action</th>
     
                         </tr>
                     </thead>
                     <tbody>
-                    {% for client in dataClients %}
+                    {% for dette in dettes %}
                         <tr class="">
-                                    {% if client.user is not null %}
-                                    <td scope="row">{{client.user.nom ~ " " ~ client.user.prenom }}</td>
-                                    {% else %}
-                                        <td scope="row">-</td>
-                                    {% endif %}
-                                    
-                                    <td scope="row">{{client.telephone}}</td>
-                                    <td>{{client.surname}}</td>
-                                    <td>{{client.adresse}}</td>
-                                    <td><a
-                                        href="{{path("dette.index",{idClient:client.id})}}"
+                                  
+                                    <td scope="row">{{dette.dateAt|date('d-m-Y')}}</td>
+                                    <td scope="row">{{dette.client.surname}}</td>
+                                    <td scope="row">{{dette.client.telephone}}</td>
+                                    <td>{{dette.montant}}</td>
+                                    <td>{{dette.montantVerse}}</td>
+                                    <td><button
                                         type="button"
                                         class="btn btn-outline-dark"
                                     >
-                                        Dettes
-                                    </a>
+                                        Details
+                                    </button>
                                     </td>
                         </tr>
                     {% else %}
@@ -105,5 +93,3 @@
 </div>
 
 {% endblock %}
-
-

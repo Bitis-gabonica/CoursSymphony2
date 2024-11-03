@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Dto\ClientFormSearch;
 use App\Entity\Client;
+use App\Form\ClientFormSearchType;
 use App\Form\ClientType;
 use App\Repository\ClientRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -14,14 +16,34 @@ use Symfony\Component\Routing\Attribute\Route;
 class ClientController extends AbstractController
 {
     #[Route('/client/liste', name: 'client.index')]
-    public function index(ClientRepository $clientRepository): Response
+    public function index(ClientRepository $clientRepository,Request $request): Response
     {
-
+        $clientFormSearch= new ClientFormSearch;
+        $searchClientform=$this->createForm(ClientFormSearchType::class,$clientFormSearch);
+        $searchClientform->handleRequest($request);
         $clients=$clientRepository->findAll();
+        if ($searchClientform->isSubmitted()){
+            $surname=$clientFormSearch->getSurname();
+            $telephone=$clientFormSearch->getTelephone();
+            $statut=$clientFormSearch->getStatut();
+           if ($surname!="") {
+           $clients=$clientRepository->findBy(['surname'=>$surname]);
+           }
+           if ($telephone!="") {
+            $clients=$clientRepository->findBy(['telephone'=>$telephone]);
+            }
+            if ($statut !="Tout") {
+                //$user=$statut=="Oui"?:null;
+                $clients=$clientRepository->findByClientWithOrUser($statut);
+                }
+
+        }
+
 
 
         return $this->render('client/index.html.twig', [
             'dataClients' => $clients,
+            'searchClientform'=>$searchClientform,
         ]);
     }
 

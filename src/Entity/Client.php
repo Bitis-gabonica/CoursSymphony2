@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ClientRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -30,6 +32,20 @@ class Client
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message:'Adresse est obligatoire')]
     private ?string $adresse = null;
+
+    #[ORM\OneToOne(inversedBy: 'client', cascade: ['persist', 'remove'])]
+    private ?User $user = null;
+
+    /**
+     * @var Collection<int, Dette>
+     */
+    #[ORM\OneToMany(targetEntity: Dette::class, mappedBy: 'client',cascade: ['persist', 'remove'])]
+    private Collection $dettes;
+
+    public function __construct()
+    {
+        $this->dettes = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -68,6 +84,48 @@ class Client
     public function setAdresse(string $adresse): static
     {
         $this->adresse = $adresse;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Dette>
+     */
+    public function getDettes(): Collection
+    {
+        return $this->dettes;
+    }
+
+    public function addDette(Dette $dette): static
+    {
+        if (!$this->dettes->contains($dette)) {
+            $this->dettes->add($dette);
+            $dette->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDette(Dette $dette): static
+    {
+        if ($this->dettes->removeElement($dette)) {
+            // set the owning side to null (unless already changed)
+            if ($dette->getClient() === $this) {
+                $dette->setClient(null);
+            }
+        }
 
         return $this;
     }

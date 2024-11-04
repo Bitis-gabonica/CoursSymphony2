@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Client;
 use App\Entity\Dette;
+use App\Entity\Paiement;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -31,10 +32,22 @@ class ClientFixtures extends Fixture
                     $dette->setMontant(1000*$j*$i);
                     if ($j % 2 ==0) {
                     $dette->setMontantVerse(1000*$j*$i-1000);
+                    $paiement1=new Paiement();
+                    $paiement1->setMontant(1000);
+                    $dette->addPaiement($paiement1);
+                    
+                    $paiement2=new Paiement();
+                    $paiement2->setMontant(1000*$j*$i-2000);
+                    $dette->addPaiement($paiement2);
                     }else {
                         $dette->setMontantVerse(1000*$j*$i);
+                        $paiement=new Paiement();
+                        $paiement->setMontant(1000*$j*$i);
+                        $dette->addPaiement($paiement);
                     }
                     $client->addDette($dette);
+
+                    
                 }
             }
             $manager->persist($client);
